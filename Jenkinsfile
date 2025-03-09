@@ -8,31 +8,17 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Repository') {
-            steps {
-                git branch: 'main', url: 'https://github.com/DenisPrisma/DEMOREPO.git'
-            }
-        }
-
-        stage('Checkov Scan') {
+        stage('Checkov Scan - AWS Only') {
             steps {
                 script {
                     sh '''
-                    # Fix workspace path with quotes to handle spaces
-                    WORKSPACE_ESCAPED="${WORKSPACE}"
-
-                    # DEBUG: Show scanned files
-                    echo "📂 Listing Terraform files in workspace:"
-                    find "$WORKSPACE_ESCAPED" -name "*.tf"
-
-                    # Run Checkov inside Docker (Fixes path issues)
-                    docker run --rm -v "$WORKSPACE_ESCAPED:/tf" bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
+                    # Run Checkov directly on the GitHub repo (no workspace mount)
+                    docker run --rm bridgecrew/checkov:latest \
+                    -d https://github.com/DenisPrisma/DEMOREPO.git//terraform/aws \
+                    --use-enforcement-rules \
                     -o cli \
                     --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
                     --repo-id DenisPrisma/DEMOREPO --branch main || true
-
-                    # DEBUG: Check if Prisma URL is being generated
-                    echo "✅ Checkov scan completed. View results in Prisma Cloud."
                     '''
                 }
             }
@@ -42,7 +28,7 @@ pipeline {
     post {
         always {
             script {
-                echo "✅ Pipeline completed. Check Prisma Cloud for results."
+                echo "✅ Checkov scan completed. Check Prisma Cloud for results."
             }
         }
     }
