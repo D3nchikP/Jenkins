@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/D3nchikP/Jenkins.git'
+                git branch: 'master', url: 'https://github.com/D3nchikP/terragoat.git'
             }
         }
 
@@ -18,9 +18,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    docker run --rm -v $(pwd):/tf bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
-                    -o cli -o junitxml --output-file-path console,${WORKSPACE}/results.xml \
-                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/Jenkins --branch main || true
+                    WORKSPACE_ESCAPED="${WORKSPACE// /\\ }"
+                    docker run --rm -v "$WORKSPACE_ESCAPED/terraform/aws:/tf" bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
+                    -o cli -o junitxml --output-file-path console,"$WORKSPACE/results.xml" \
+                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/terragoat --branch master || true
                     '''
                 }
             }
