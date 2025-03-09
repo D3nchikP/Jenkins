@@ -18,7 +18,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    WORKSPACE_ESCAPED="${WORKSPACE// /\\ }"
+                    # Use Bash explicitly
+                    export WORKSPACE_ESCAPED="$(echo $WORKSPACE | sed 's/ /\\\\ /g')"
+
+                    # Run Checkov inside Docker with fixed path
                     docker run --rm -v "$WORKSPACE_ESCAPED/terraform/aws:/tf" bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
                     -o cli -o junitxml --output-file-path console,"$WORKSPACE/results.xml" \
                     --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/terragoat --branch master || true
