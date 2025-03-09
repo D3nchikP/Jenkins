@@ -1,29 +1,29 @@
 pipeline {
+
     agent any
 
     environment {
-        PRISMA_API_URL = credentials('PRISMA_CLOUD_API')
-        ACCESS_KEY = credentials('PRISMA_ACCESS_KEY')
-        SECRET_KEY = credentials('PRISMA_SECRET_KEY')
+         PRISMA_API_URL = 'https://api2.prismacloud.io'
+         ACCESS_KEY     = credentials('pc-access-key')
+         SECRET_KEY     = credentials('pc-secret-key')
     }
 
     stages {
-        stage('Checkov') {
+        stage ('Checkov') {
             steps {
                 script {
                     docker.image('bridgecrew/checkov:latest').inside("--entrypoint=''") {
-                        sh """
-                        checkov --use-enforcement-rules -o cli \
-                        --prisma-api-url \${PRISMA_API_URL} \
-                        --bc-api-key \${ACCESS_KEY}::\${SECRET_KEY} \
+                        sh '''
+                        checkov -d . --use-enforcement-rules -o cli \
+                        --prisma-api-url ${PRISMA_API_URL} \
+                        --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
                         --repo-id DenisPrisma/DEMOREPO --branch main
-                        """
+                        '''
                     }
-                }
+                } 
             }
         }
-
-        stage('Deploy') {
+        stage ('Deploy') {
             steps {
                 script {
                     sh "echo 'deploy'"
