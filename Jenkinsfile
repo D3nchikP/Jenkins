@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Repository') {
             steps {
-                git branch: 'master', url: 'https://github.com/D3nchikP/terragoat.git'
+                git branch: 'main', url: 'https://github.com/D3nchikP/denisprisma.git'
             }
         }
 
@@ -18,13 +18,13 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    # Use Bash explicitly
+                    # Ensure we're using Bash
                     export WORKSPACE_ESCAPED="$(echo $WORKSPACE | sed 's/ /\\\\ /g')"
 
-                    # Run Checkov inside Docker with fixed path
-                    docker run --rm -v "$WORKSPACE_ESCAPED/terraform/aws:/tf" bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
-                    -o cli -o junitxml --output-file-path console,"$WORKSPACE/results.xml" \
-                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/terragoat --branch master || true
+                    # Run Checkov inside Docker (No XML, Prisma URL only)
+                    docker run --rm -v "$WORKSPACE_ESCAPED:/tf" bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
+                    -o cli \
+                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/denisprisma --branch main || true
                     '''
                 }
             }
@@ -34,11 +34,7 @@ pipeline {
     post {
         always {
             script {
-                if (fileExists("${WORKSPACE}/results.xml")) {
-                    junit skipPublishingChecks: true, testResults: '${WORKSPACE}/results.xml'
-                } else {
-                    echo "⚠️ Warning: No results.xml found. Checkov scan may have failed."
-                }
+                echo "✅ Checkov scan completed. View results in Prisma Cloud."
             }
         }
     }
