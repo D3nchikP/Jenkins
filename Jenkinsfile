@@ -11,16 +11,16 @@ pipeline {
         stage ('Checkov') {
             steps {
                 script {
-                    docker.image('bridgecrew/checkov:latest').inside("--entrypoint='' --user root -v /tmp/bridgecrew:/root/.bridgecrew") {
-                        sh '''
-                        checkov -d "/var/lib/jenkins/workspace/Checkov Scan" \
-                        --use-enforcement-rules -o cli -o junitxml \
-                        --output-file-path console,results.xml \
-                        --prisma-api-url ${PRISMA_API_URL} \
-                        --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
-                        --repo-id DenisPrisma/DEMOREPO --branch main
-                        '''
-                    }
+                    sh '''
+                    docker run --rm --user root \
+                    -v /tmp/bridgecrew:/root/.bridgecrew \
+                    -v "/var/lib/jenkins/workspace/Checkov Scan:/tf" \
+                    bridgecrew/checkov:latest \
+                    -d /tf --use-enforcement-rules -o cli \
+                    --prisma-api-url ${PRISMA_API_URL} \
+                    --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
+                    --repo-id DenisPrisma/DEMOREPO --branch main
+                    '''
                 } 
             }
         }
