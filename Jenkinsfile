@@ -4,8 +4,8 @@ pipeline {
 
     environment {
          PRISMA_API_URL = 'https://api2.prismacloud.io'
-         ACCESS_KEY     = credentials('pc-access-key')
-         SECRET_KEY     = credentials('pc-secret-key')
+         ACCESS_KEY     = credentials('ACCESS_KEY')
+         SECRET_KEY     = credentials('SECRET_KEY')
     }
 
     stages {
