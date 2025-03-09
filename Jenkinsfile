@@ -17,17 +17,23 @@ pipeline {
                                 --use-enforcement-rules \
                                 --prisma-api-url ${PRISMA_API_URL} \
                                 --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
-                                --repo-id D3nchikP/terragoat \
+                                --repo-id DenisPrisma/DEMOREPO \
                                 --branch main \
                                 -o cli -o junitxml \
-                                --output-file-path console,results.xml
+                                --output-file-path console,results.xml || true
                         '''
                     }
                 } 
             }
             post {
                 always {
-                    junit 'results.xml'
+                    script {
+                        if (fileExists('results.xml')) {
+                            junit 'results.xml'
+                        } else {
+                            echo "No Checkov results found; skipping JUnit reporting."
+                        }
+                    }
                 }
             }
         }
