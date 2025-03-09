@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/D3nchikP/denisprisma.git'
+                git branch: 'main', url: 'https://github.com/D3nchikP/terragoat.git'
             }
         }
 
