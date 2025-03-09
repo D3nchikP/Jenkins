@@ -24,7 +24,7 @@ pipeline {
                     # Run Checkov inside Docker (No XML, Prisma URL only)
                     docker run --rm -v "$WORKSPACE_ESCAPED:/tf" bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
                     -o cli \
-                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/denisprisma --branch main || true
+                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id DenisPrisma/DEMOREPO --branch main || true
                     '''
                 }
             }
