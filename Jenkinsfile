@@ -11,10 +11,27 @@ pipeline {
         stage ('Checkov') {
             steps {
                 script {
-                    sh '/usr/local/bin/checkov -d . --use-enforcement-rules -o cli -o junitxml --output-file-path console,results.xml --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id DenisPrisma/DEMOREPO --branch main'
+                    docker.image('bridgecrew/checkov:latest').inside("--entrypoint='' -u root") {
+                        sh '''
+                            checkov -d . \
+                                --use-enforcement-rules \
+                                --prisma-api-url ${PRISMA_API_URL} \
+                                --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
+                                --repo-id D3nchikP/terragoat \
+                                --branch main \
+                                -o cli -o junitxml \
+                                --output-file-path console,results.xml
+                        '''
+                    }
+                } 
+            }
+            post {
+                always {
+                    junit 'results.xml'
                 }
             }
         }
+
         stage ('Deploy') {
             steps {
                 script {
