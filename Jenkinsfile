@@ -13,7 +13,7 @@ pipeline {
                 script {
                     docker.image('bridgecrew/checkov:latest').inside("--entrypoint='' --user root -v /tmp/bridgecrew:/root/.bridgecrew") {
                         sh '''
-                        checkov -d /var/lib/jenkins/workspace/Checkov\ Scan \
+                        checkov -d "/var/lib/jenkins/workspace/Checkov Scan" \
                         --use-enforcement-rules -o cli -o junitxml \
                         --output-file-path console,results.xml \
                         --prisma-api-url ${PRISMA_API_URL} \
