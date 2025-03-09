@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     environment {
@@ -14,10 +13,9 @@ pipeline {
                 script {
                     docker.image('bridgecrew/checkov:latest').inside("--entrypoint=''") {
                         sh """
-                        checkov --repo https://github.com/DenisPrisma/DEMOREPO.git \
-                        --use-enforcement-rules -o cli \
-                        --prisma-api-url ${PRISMA_API_URL} \
-                        --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
+                        checkov --use-enforcement-rules -o cli \
+                        --prisma-api-url \${PRISMA_API_URL} \
+                        --bc-api-key \${ACCESS_KEY}::\${SECRET_KEY} \
                         --repo-id DenisPrisma/DEMOREPO --branch main
                         """
                     }
