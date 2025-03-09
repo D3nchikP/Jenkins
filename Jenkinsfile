@@ -14,7 +14,6 @@ pipeline {
                     sh '''
                     docker run --rm bridgecrew/checkov:latest \
                     --repo-id DenisPrisma/DEMOREPO \
-                    --repo-root-for-plan-enrichment https://github.com/D3nchikP/DEMOREPO.git \
                     --branch main \
                     --use-enforcement-rules -o cli \
                     --prisma-api-url ${PRISMA_API_URL} \
