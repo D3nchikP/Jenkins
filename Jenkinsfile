@@ -8,6 +8,12 @@ pipeline {
     }
 
     stages {
+        stage ('Checkout') {
+            steps {
+                git 'https://github.com/DenisPrisma/DEMOREPO.git'
+            }
+        }
+
         stage ('Checkov') {
             steps {
                 script {
@@ -28,10 +34,10 @@ pipeline {
             post {
                 always {
                     script {
-                        if (fileExists('results.xml')) {
+                        if (fileExists('results.xml') && readFile('results.xml').trim()) {
                             junit 'results.xml'
                         } else {
-                            echo "No Checkov results found; skipping JUnit reporting."
+                            echo "No valid Checkov results found; skipping JUnit reporting."
                         }
                     }
                 }
@@ -40,9 +46,7 @@ pipeline {
 
         stage ('Deploy') {
             steps {
-                script {
-                    sh "echo 'deploy'"
-                }
+                sh "echo 'deploy'"
             }
         }
     }
