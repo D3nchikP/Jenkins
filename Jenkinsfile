@@ -18,14 +18,14 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    # Ensure we're using Bash
-                    export WORKSPACE_ESCAPED="$(echo $WORKSPACE | sed 's/ /\\\\ /g')"
+                    # Fix workspace path with quotes to handle spaces
+                    WORKSPACE_ESCAPED="${WORKSPACE}"
 
                     # DEBUG: Show scanned files
                     echo "📂 Listing Terraform files in workspace:"
-                    find $WORKSPACE_ESCAPED -name "*.tf"
+                    find "$WORKSPACE_ESCAPED" -name "*.tf"
 
-                    # Run Checkov inside Docker (Debugging Enabled)
+                    # Run Checkov inside Docker (Fixes path issues)
                     docker run --rm -v "$WORKSPACE_ESCAPED:/tf" bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
                     -o cli \
                     --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
