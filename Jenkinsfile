@@ -12,11 +12,11 @@ pipeline {
         stage ('Checkov') {
             steps {
                 script {
-                    docker.image('bridgecrew/checkov:latest').inside("--entrypoint=''") {
+                    docker.image('bridgecrew/checkov:latest').inside("--entrypoint='' --user root -v /tmp/bridgecrew:/root/.bridgecrew") {
                         sh '''
                         checkov -d . --use-enforcement-rules -o cli \
-                        --prisma-api-url ${PRISMA_API_URL} \
-                        --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
+                        --prisma-api-url $PRISMA_API_URL \
+                        --bc-api-key $ACCESS_KEY::$SECRET_KEY \
                         --repo-id DenisPrisma/DEMOREPO --branch main
                         '''
                     }
