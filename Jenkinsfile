@@ -11,16 +11,14 @@ pipeline {
         stage('Checkov Scan - AWS Only') {
             steps {
                 script {
-                    sh '''
-                    # Run Checkov on GitHub repo (no workspace mount)
-                    docker run --rm bridgecrew/checkov:latest \
-                    --repo https://github.com/DenisPrisma/DEMOREPO.git \
-                    --directory terraform/aws \
-                    --use-enforcement-rules \
-                    -o cli \
-                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
-                    --repo-id DenisPrisma/DEMOREPO --branch main || true
-                    '''
+                    docker.image('bridgecrew/checkov:latest').inside("--entrypoint=''") {
+                        sh '''
+                        checkov --use-enforcement-rules -o cli \
+                        --prisma-api-url ${PRISMA_API_URL} \
+                        --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
+                        --repo-id DenisPrisma/DEMOREPO --branch main || true
+                        '''
+                    }
                 }
             }
         }
