@@ -10,7 +10,7 @@ pipeline {
 
     stages {
         stage ('Checkov') {
-            steps {
+            steps 
                 script {
                     docker.image('bridgecrew/checkov:latest').inside("--entrypoint=''") {
                         sh '''
