@@ -17,13 +17,11 @@ pipeline {
         stage('Checkov Scan') {
             steps {
                 script {
-                    withDockerContainer(image: 'bridgecrew/checkov:latest') {
-                        sh '''
-                        checkov -d . --use-enforcement-rules \
-                        -o cli -o junitxml --output-file-path console,${WORKSPACE}/results.xml \
-                        --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/Jenkins --branch main || true
-                        '''
-                    }
+                    sh '''
+                    docker run --rm -v $(pwd):/tf bridgecrew/checkov:latest -d /tf --use-enforcement-rules \
+                    -o cli -o junitxml --output-file-path console,${WORKSPACE}/results.xml \
+                    --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} --repo-id D3nchikP/Jenkins --branch main || true
+                    '''
                 }
             }
         }
