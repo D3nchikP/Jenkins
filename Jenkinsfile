@@ -12,9 +12,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    # Run Checkov directly on the GitHub repo (no workspace mount)
+                    # Run Checkov on GitHub repo (no workspace mount)
                     docker run --rm bridgecrew/checkov:latest \
-                    -d https://github.com/DenisPrisma/DEMOREPO.git//terraform/aws \
+                    --repo https://github.com/DenisPrisma/DEMOREPO.git \
+                    --directory terraform/aws \
                     --use-enforcement-rules \
                     -o cli \
                     --prisma-api-url ${PRISMA_API_URL} --bc-api-key ${ACCESS_KEY}::${SECRET_KEY} \
